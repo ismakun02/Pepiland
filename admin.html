@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visor Encuestas Pepiland </title>
+    <title>Dashboard Pepiland - Encuestas de Satisfacción</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -386,26 +386,296 @@
             color: var(--primary-color);
         }
 
-        /* Responsive */
+        /* Estilos para botón de comentarios */
+        .comments-button {
+            background: linear-gradient(135deg, var(--secondary-color), #475569);
+            color: white;
+            border: none;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            font-family: inherit;
+        }
+
+        .comments-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, #475569, var(--secondary-color));
+        }
+
+        .comments-button:active {
+            transform: translateY(0);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Responsive mejorado */
+        @media (max-width: 1024px) {
+            .container {
+                padding: var(--spacing-xl);
+                margin: var(--spacing-md);
+            }
+            
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--spacing-md);
+            }
+            
+            .chart-container {
+                height: 350px;
+                padding: var(--spacing-lg);
+            }
+        }
+
         @media (max-width: 768px) {
-            body { padding: var(--spacing-md); }
-            .container { padding: var(--spacing-lg); }
-            h1 { font-size: 2.25rem; }
-            h2 { font-size: 1.5rem; }
-            .summary-grid { grid-template-columns: 1fr; }
-            .chart-container { height: 300px; padding: var(--spacing-lg); }
-            .dashboard-actions button { width: 100%; margin-bottom: var(--spacing-sm); }
-            .modal-content { padding: var(--spacing-lg); width: 95%; }
-            .close-button { font-size: 1.75rem; top: var(--spacing-md); right: var(--spacing-lg); }
+            body { 
+                padding: var(--spacing-sm); 
+                font-size: 14px;
+            }
+            
+            .container { 
+                padding: var(--spacing-lg); 
+                margin: var(--spacing-xs);
+                border-radius: var(--radius-lg);
+            }
+            
+            h1 { 
+                font-size: 2rem; 
+                margin-bottom: var(--spacing-md);
+            }
+            
+            h2 { 
+                font-size: 1.5rem; 
+                margin-top: var(--spacing-xl);
+            }
+            
+            .summary-grid { 
+                grid-template-columns: 1fr; 
+                gap: var(--spacing-md);
+            }
+            
+            .summary-card {
+                padding: var(--spacing-lg);
+                margin-bottom: var(--spacing-sm);
+            }
+            
+            .summary-card h3 {
+                font-size: 1.1rem;
+            }
+            
+            .summary-card .value {
+                font-size: 1.5rem;
+            }
+            
+            .chart-container { 
+                height: 300px; 
+                padding: var(--spacing-md);
+                margin-bottom: var(--spacing-lg);
+            }
+            
+            .dashboard-actions { 
+                flex-direction: column;
+                gap: var(--spacing-sm);
+            }
+            
+            .dashboard-actions button { 
+                width: 100%; 
+                margin-bottom: var(--spacing-sm);
+                padding: var(--spacing-lg);
+                font-size: 1.1rem;
+            }
+            
+            .modal-content { 
+                padding: var(--spacing-lg); 
+                width: 95%; 
+                margin: var(--spacing-sm);
+            }
+            
+            .close-button { 
+                font-size: 1.5rem; 
+                top: var(--spacing-md); 
+                right: var(--spacing-md);
+                width: 35px;
+                height: 35px;
+            }
+            
+            .detail-card {
+                padding: var(--spacing-md);
+                margin-bottom: var(--spacing-sm);
+            }
+            
+            .detail-card p {
+                font-size: 0.9rem;
+                margin: var(--spacing-xs) 0;
+            }
+            
+            .comments-button {
+                width: 100%;
+                padding: var(--spacing-lg);
+                font-size: 1.1rem;
+                margin-top: var(--spacing-md);
+            }
         }
 
         @media (max-width: 480px) {
-            body { padding: var(--spacing-sm); }
-            .container { padding: var(--spacing-md); }
-            h1 { font-size: 1.875rem; }
-            h2 { font-size: 1.25rem; }
-            .summary-card { padding: var(--spacing-lg); }
-            .chart-container { height: 250px; }
+            body { 
+                padding: var(--spacing-xs); 
+                font-size: 13px;
+            }
+            
+            .container { 
+                padding: var(--spacing-md); 
+                margin: 0;
+                border-radius: var(--radius-md);
+            }
+            
+            .logo {
+                max-width: 150px;
+                margin-bottom: var(--spacing-sm);
+            }
+            
+            h1 { 
+                font-size: 1.75rem; 
+                margin-bottom: var(--spacing-sm);
+            }
+            
+            h2 { 
+                font-size: 1.25rem; 
+                margin-top: var(--spacing-lg);
+                margin-bottom: var(--spacing-md);
+            }
+            
+            .summary-card { 
+                padding: var(--spacing-md); 
+                margin-bottom: var(--spacing-xs);
+            }
+            
+            .summary-card h3 {
+                font-size: 1rem;
+                margin-bottom: var(--spacing-sm);
+            }
+            
+            .summary-card p {
+                font-size: 0.9rem;
+                margin-bottom: var(--spacing-xs);
+            }
+            
+            .summary-card .value {
+                font-size: 1.25rem;
+            }
+            
+            .chart-container { 
+                height: 250px; 
+                padding: var(--spacing-sm);
+                margin-bottom: var(--spacing-md);
+            }
+            
+            .dashboard-actions button {
+                padding: var(--spacing-md);
+                font-size: 1rem;
+                border-radius: var(--radius-md);
+            }
+            
+            .modal-content {
+                padding: var(--spacing-md);
+                width: 98%;
+                margin: var(--spacing-xs);
+                border-radius: var(--radius-lg);
+            }
+            
+            .modal-content h3 {
+                font-size: 1.25rem;
+                margin-bottom: var(--spacing-md);
+            }
+            
+            .close-button {
+                font-size: 1.25rem;
+                top: var(--spacing-sm);
+                right: var(--spacing-sm);
+                width: 30px;
+                height: 30px;
+            }
+            
+            .detail-card {
+                padding: var(--spacing-sm);
+                margin-bottom: var(--spacing-xs);
+                border-radius: var(--radius-md);
+            }
+            
+            .detail-card p {
+                font-size: 0.85rem;
+                line-height: 1.4;
+            }
+            
+            .detail-card h4 {
+                font-size: 1rem;
+                margin-bottom: var(--spacing-sm);
+            }
+            
+            .comments-button {
+                width: 100%;
+                padding: var(--spacing-md);
+                font-size: 1rem;
+                margin-top: var(--spacing-sm);
+                border-radius: var(--radius-md);
+            }
+        }
+
+        @media (max-width: 360px) {
+            body {
+                padding: 0;
+            }
+            
+            .container {
+                padding: var(--spacing-sm);
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            
+            .logo {
+                max-width: 120px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.1rem;
+            }
+            
+            .summary-card {
+                padding: var(--spacing-sm);
+            }
+            
+            .summary-card .value {
+                font-size: 1.1rem;
+            }
+            
+            .chart-container {
+                height: 200px;
+                padding: var(--spacing-xs);
+            }
+            
+            .modal-content {
+                padding: var(--spacing-sm);
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            
+            .comments-button {
+                width: 100%;
+                padding: var(--spacing-sm);
+                font-size: 0.9rem;
+                margin-top: var(--spacing-xs);
+                border-radius: var(--radius-sm);
+            }
         }
     </style>
 </head>
@@ -458,7 +728,7 @@
         
         <!-- Botón para ver todos los comentarios -->
         <div style="text-align: center; margin-top: var(--spacing-lg);">
-            <button onclick="showCommentsDetails()" style="background: linear-gradient(135deg, var(--secondary-color), #475569); color: white; border: none; padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--radius-lg); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-md);">
+            <button onclick="showCommentsDetails()" class="comments-button">
                 💬 Ver Todos los Comentarios
             </button>
         </div>
@@ -556,12 +826,15 @@
                     updateSummaryCards();
                     updateChart();
                     updateRecentComments();
+                    return Promise.resolve();
                 } else {
                     showNoDataMessage();
+                    return Promise.resolve();
                 }
             } catch (error) {
                 console.error('Error cargando datos:', error);
                 showErrorMessage();
+                return Promise.reject(error);
             }
         }
 
@@ -684,40 +957,87 @@
             document.getElementById('recentComments').innerHTML = '<div class="error-message">Error al cargar los datos. Por favor, inténtalo de nuevo.</div>';
         }
 
-        // Función para refrescar datos
+        // Función para refrescar datos con feedback visual
         window.refreshData = function() {
-            loadSurveyData();
+            const button = event.target;
+            const originalText = button.textContent;
+            
+            button.disabled = true;
+            button.textContent = '🔄 Actualizando...';
+            button.style.opacity = '0.7';
+            
+            loadSurveyData().then(() => {
+                button.textContent = '✅ Actualizado';
+                setTimeout(() => {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                    button.style.opacity = '1';
+                }, 1500);
+            }).catch(() => {
+                button.textContent = '❌ Error';
+                setTimeout(() => {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                    button.style.opacity = '1';
+                }, 2000);
+            });
         };
 
-        // Función para exportar a CSV
+        // Función para exportar a CSV con feedback visual
         window.exportToCSV = function() {
+            const button = event.target;
+            const originalText = button.textContent;
+            
             if (surveyData.length === 0) {
-                alert('No hay datos para exportar');
+                button.textContent = '❌ Sin datos';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
                 return;
             }
 
-            const headers = ['Nombre', 'Calidad Comida', 'Servicio', 'Ambiente', 'Comentarios', 'Fecha'];
-            const csvContent = [
-                headers.join(','),
-                ...surveyData.map(survey => [
-                    `"${survey.name || ''}"`,
-                    `"${survey.food_quality || ''}"`,
-                    `"${survey.restaurant_service || ''}"`,
-                    `"${survey.restaurant_atmosphere || ''}"`,
-                    `"${(survey.suggestions || '').replace(/"/g, '""')}"`,
-                    `"${new Date(survey.timestamp).toLocaleDateString('es-ES')}"`
-                ].join(','))
-            ].join('\n');
+            button.disabled = true;
+            button.textContent = '📊 Exportando...';
+            button.style.opacity = '0.7';
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `encuestas_pepiland_${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            try {
+                const headers = ['Nombre', 'Calidad Comida', 'Servicio', 'Ambiente', 'Comentarios', 'Fecha'];
+                const csvContent = [
+                    headers.join(','),
+                    ...surveyData.map(survey => [
+                        `"${survey.name || ''}"`,
+                        `"${survey.food_quality || ''}"`,
+                        `"${survey.restaurant_service || ''}"`,
+                        `"${survey.restaurant_atmosphere || ''}"`,
+                        `"${(survey.suggestions || '').replace(/"/g, '""')}"`,
+                        `"${new Date(survey.timestamp).toLocaleDateString('es-ES')}"`
+                    ].join(','))
+                ].join('\n');
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `encuestas_pepiland_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                button.textContent = '✅ Exportado';
+                setTimeout(() => {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                    button.style.opacity = '1';
+                }, 1500);
+            } catch (error) {
+                button.textContent = '❌ Error';
+                setTimeout(() => {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                    button.style.opacity = '1';
+                }, 2000);
+            }
         };
 
         // Funciones para modales/pop-ups

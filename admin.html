@@ -297,6 +297,12 @@
             justify-content: center;
             align-items: center;
             padding: var(--spacing-lg);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.modal-open {
+            opacity: 1;
         }
 
         .modal-content {
@@ -315,6 +321,12 @@
             display: flex;
             flex-direction: column;
             border: 1px solid var(--border-light);
+            transform: translateY(50px) scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.modal-open .modal-content {
+            transform: translateY(0) scale(1);
         }
 
         @keyframes slideInUp {
@@ -338,12 +350,21 @@
             justify-content: center;
             border-radius: 50%;
             background: var(--surface-color);
+            border: none;
+            z-index: 1001;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .close-button:hover {
             color: var(--error-color);
             background: #fef2f2;
             transform: scale(1.1);
+        }
+
+        .close-button:active {
+            transform: scale(0.95);
         }
 
         .modal-content h3 {
@@ -1042,12 +1063,35 @@
 
         // Funciones para modales/pop-ups
         function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'flex';
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
+            
+            // Agregar clase para animación
+            setTimeout(() => {
+                modal.classList.add('modal-open');
+            }, 10);
         }
 
         function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('modal-open');
+            
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+
+        // Función para cerrar cualquier modal abierto
+        function closeAllModals() {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                modal.classList.remove('modal-open');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            });
             document.body.style.overflow = 'auto';
         }
 
@@ -1177,14 +1221,33 @@
             });
         }
 
-        // Cerrar modal al hacer clic fuera de él
-        window.onclick = function(event) {
+        // Cerrar modal al hacer clic fuera de él (mejorado para dispositivos táctiles)
+        document.addEventListener('click', function(event) {
             const modals = document.querySelectorAll('.modal');
             modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
+                if (modal.style.display === 'flex' && event.target === modal) {
+                    closeAllModals();
                 }
+            });
+        });
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeAllModals();
+            }
+        });
+
+        // Mejorar la funcionalidad de los botones de cerrar
+        function setupCloseButtons() {
+            const closeButtons = document.querySelectorAll('.close-button');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    if (modal) {
+                        closeModal(modal.id);
+                    }
+                });
             });
         }
 
@@ -1192,7 +1255,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadSurveyData();
             // Agregar listeners después de cargar los datos
-            setTimeout(addCardClickListeners, 1000);
+            setTimeout(() => {
+                addCardClickListeners();
+                setupCloseButtons();
+            }, 1000);
         });
     </script>
 </body>

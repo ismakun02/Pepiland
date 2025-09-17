@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visor Encuestas Pepiland </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Variables CSS para consistencia - Diseño Moderno Pepiland */
+        :root {
+            /* Paleta de colores Pepiland */
+            --primary-color: #f59e0b; /* Amarillo Principal */
+            --primary-dark: #d97706; /* Amarillo Oscuro */
+            --primary-light: #fbbf24; /* Amarillo Claro */
+            --secondary-color: #a78b5b; /* Marrón Claro */
+            --accent-color: #d4a574; /* Acento Marrón */
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            
+            /* Colores de fondo */
+            --background-color: #fefce8; /* Amarillo 50 */
+            --card-background: #ffffff;
+            --surface-color: #f1f5f9;
+            
+            /* Colores de texto */
+            --text-primary: #451a03; /* Marrón Oscuro */
+            --text-secondary: #a78b5b; /* Marrón Claro */
+            --text-muted: #94a3b8;
+            
+            /* Bordes y sombras */
+            --border-color: #fde68a; /* Amber 200 */
+            --border-light: #f1f5f9;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            
+            /* Espaciado */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            
+            /* Bordes redondeados */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+        }
+
+        /* Estilos generales */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fbbf24 0%, #d4a574 100%);
+            color: var(--text-primary);
+            margin: 0;
+            padding: var(--spacing-lg);
+            min-height: 100vh;
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+
+        .container {
+            background: var(--card-background);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-xl);
+            padding: var(--spacing-2xl);
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .logo {
+            max-width: 200px;
+            margin: 0 auto var(--spacing-md) auto;
+            display: block;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+
+        h1 {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 3rem;
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--text-primary);
+            font-size: 2rem;
+            margin-top: var(--spacing-2xl);
+            margin-bottom: var(--spacing-lg);
+            font-weight: 700;
+            position: relative;
+            padding-bottom: var(--spacing-md);
+            text-align: center;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+
+        /* Grid para las tarjetas de resumen */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        /* Tarjetas de resumen */
+        .summary-card {
+            background: linear-gradient(135deg, var(--card-background) 0%, var(--surface-color) 100%);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            text-align: left;
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .summary-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .summary-card h3 {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            margin-top: 0;
+            margin-bottom: var(--spacing-md);
+            font-weight: 600;
+        }
+
+        .summary-card p {
+            font-size: 1.125rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-secondary);
+        }
+
+        .summary-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        /* Contenedor para el gráfico */
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 0 auto var(--spacing-xl) auto;
+            background: var(--card-background);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-xl);
+            box-sizing: border-box;
+            border: 1px solid var(--border-light);
+            position: relative;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+        }
+
+        /* Mensajes de estado */
+        .loading-message, .no-data-message, .error-message {
+            text-align: center;
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-top: var(--spacing-2xl);
+            font-size: 1.25rem;
+            padding: var(--spacing-xl);
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-light);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto var(--spacing-lg) auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-weight: 600;
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        /* Botones de acción */
+        .dashboard-actions {
+            margin-top: var(--spacing-xl);
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .dashboard-actions button {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Estilos para Modales/Pop-ups */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-lg);
+        }
+
+        .modal-content {
+            background: var(--card-background);
+            margin: auto;
+            padding: var(--spacing-2xl);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-xl);
+            width: 90%;
+            max-width: 800px;
+            position: relative;
+            animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-light);
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(50px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .close-button {
+            color: var(--text-secondary);
+            position: absolute;
+            top: var(--spacing-lg);
+            right: var(--spacing-xl);
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--surface-color);
+        }
+
+        .close-button:hover {
+            color: var(--error-color);
+            background: #fef2f2;
+            transform: scale(1.1);
+        }
+
+        .modal-content h3 {
+            color: var(--text-primary);
+            font-size: 1.75rem;
+            margin-top: 0;
+            margin-bottom: var(--spacing-lg);
+            font-weight: 700;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: var(--spacing-md);
+        }
+
+        .detail-card {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .detail-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .detail-card p {
+            margin: var(--spacing-sm) 0;
+            font-size: 1rem;
+        }
+
+        .detail-card strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .detail-card .rating-value {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { padding: var(--spacing-md); }
+            .container { padding: var(--spacing-lg); }
+            h1 { font-size: 2.25rem; }
+            h2 { font-size: 1.5rem; }
+            .summary-grid { grid-template-columns: 1fr; }
+            .chart-container { height: 300px; padding: var(--spacing-lg); }
+            .dashboard-actions button { width: 100%; margin-bottom: var(--spacing-sm); }
+            .modal-content { padding: var(--spacing-lg); width: 95%; }
+            .close-button { font-size: 1.75rem; top: var(--spacing-md); right: var(--spacing-lg); }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: var(--spacing-sm); }
+            .container { padding: var(--spacing-md); }
+            h1 { font-size: 1.875rem; }
+            h2 { font-size: 1.25rem; }
+            .summary-card { padding: var(--spacing-lg); }
+            .chart-container { height: 250px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://iili.io/Ku3wlJs.png" alt="Logo Pepiland" class="logo">
+        <h1>Dashboard Pepiland</h1>
+        <p class="description" style="text-align: center; color: var(--text-secondary); font-size: 1.125rem; margin-bottom: var(--spacing-xl);">
+            Análisis de Satisfacción del Restaurante
+        </p>
+
+        <!-- Tarjetas de resumen -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <h3>📊 Total de Encuestas</h3>
+                <p>Encuestas completadas</p>
+                <div class="value" id="totalSurveys">-</div>
+            </div>
+            <div class="summary-card">
+                <h3>🍽️ Calidad de Comida</h3>
+                <p>Promedio general</p>
+                <div class="value" id="foodQualityAvg">-</div>
+            </div>
+            <div class="summary-card">
+                <h3>👨‍🍳 Servicio</h3>
+                <p>Promedio general</p>
+                <div class="value" id="serviceAvg">-</div>
+            </div>
+            <div class="summary-card">
+                <h3>🏠 Ambiente</h3>
+                <p>Promedio general</p>
+                <div class="value" id="atmosphereAvg">-</div>
+            </div>
+        </div>
+
+        <!-- Gráfico de distribución -->
+        <h2>Distribución de Calificaciones</h2>
+        <div class="chart-container">
+            <canvas id="ratingsChart"></canvas>
+        </div>
+
+        <!-- Comentarios recientes -->
+        <h2>Comentarios Recientes</h2>
+        <div id="recentComments" class="comments-section">
+            <div class="loading-message">
+                <div class="loading-spinner"></div>
+                <p>Cargando comentarios...</p>
+            </div>
+        </div>
+        
+        <!-- Botón para ver todos los comentarios -->
+        <div style="text-align: center; margin-top: var(--spacing-lg);">
+            <button onclick="showCommentsDetails()" style="background: linear-gradient(135deg, var(--secondary-color), #475569); color: white; border: none; padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--radius-lg); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-md);">
+                💬 Ver Todos los Comentarios
+            </button>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="dashboard-actions">
+            <button onclick="refreshData()">🔄 Actualizar Datos</button>
+            <button onclick="exportToCSV()">📊 Exportar CSV</button>
+        </div>
+    </div>
+
+    <!-- Modal para detalles de encuestas -->
+    <div id="surveysModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('surveysModal')">&times;</span>
+            <h3>📋 Detalles de Encuestas</h3>
+            <div id="surveysModalContent">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para comentarios detallados -->
+    <div id="commentsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('commentsModal')">&times;</span>
+            <h3>💬 Comentarios Detallados</h3>
+            <div id="commentsModalContent">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para estadísticas avanzadas -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('statsModal')">&times;</span>
+            <h3>📈 Estadísticas Avanzadas</h3>
+            <div id="statsModalContent">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // Configuración de Firebase (misma que la encuesta)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAPhuV0WvM2V3V2zeoj1ix3DW2z82818f4",
+            authDomain: "ismakun-proyectos.firebaseapp.com",
+            projectId: "ismakun-proyectos",
+            storageBucket: "ismakun-proyectos.firebasestorage.app",
+            messagingSenderId: "958811816629",
+            appId: "1:958811816629:web:d99a428ab17c3098eb74fc",
+            measurementId: "G-QJESY4Y7VM"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Variables globales
+        let surveyData = [];
+        let ratingsChart = null;
+
+        // Función para convertir calificaciones a números
+        function ratingToNumber(rating) {
+            const ratingMap = {
+                'Muy Malo': 1,
+                'Malo': 2,
+                'Regular': 3,
+                'Bueno': 4,
+                'Excelente': 5
+            };
+            return ratingMap[rating] || 0;
+        }
+
+        // Función para calcular promedio
+        function calculateAverage(ratings) {
+            if (ratings.length === 0) return 0;
+            const sum = ratings.reduce((acc, rating) => acc + ratingToNumber(rating), 0);
+            return (sum / ratings.length).toFixed(1);
+        }
+
+        // Función para cargar datos de Firebase
+        async function loadSurveyData() {
+            try {
+                const surveyRef = ref(database, 'restaurant_satisfaction');
+                const snapshot = await get(surveyRef);
+                
+                if (snapshot.exists()) {
+                    surveyData = Object.values(snapshot.val());
+                    updateSummaryCards();
+                    updateChart();
+                    updateRecentComments();
+                } else {
+                    showNoDataMessage();
+                }
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                showErrorMessage();
+            }
+        }
+
+        // Función para actualizar tarjetas de resumen
+        function updateSummaryCards() {
+            const totalSurveys = surveyData.length;
+            const foodQualityRatings = surveyData.map(survey => survey.food_quality).filter(rating => rating);
+            const serviceRatings = surveyData.map(survey => survey.restaurant_service).filter(rating => rating);
+            const atmosphereRatings = surveyData.map(survey => survey.restaurant_atmosphere).filter(rating => rating);
+
+            document.getElementById('totalSurveys').textContent = totalSurveys;
+            document.getElementById('foodQualityAvg').textContent = calculateAverage(foodQualityRatings);
+            document.getElementById('serviceAvg').textContent = calculateAverage(serviceRatings);
+            document.getElementById('atmosphereAvg').textContent = calculateAverage(atmosphereRatings);
+        }
+
+        // Función para actualizar gráfico
+        function updateChart() {
+            const ctx = document.getElementById('ratingsChart').getContext('2d');
+            
+            // Destruir gráfico anterior si existe
+            if (ratingsChart) {
+                ratingsChart.destroy();
+            }
+
+            // Preparar datos para el gráfico
+            const allRatings = [
+                ...surveyData.map(s => s.food_quality),
+                ...surveyData.map(s => s.restaurant_service),
+                ...surveyData.map(s => s.restaurant_atmosphere)
+            ].filter(rating => rating);
+
+            const ratingCounts = {
+                'Muy Malo': 0,
+                'Malo': 0,
+                'Regular': 0,
+                'Bueno': 0,
+                'Excelente': 0
+            };
+
+            allRatings.forEach(rating => {
+                if (ratingCounts.hasOwnProperty(rating)) {
+                    ratingCounts[rating]++;
+                }
+            });
+
+            ratingsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Muy Malo', 'Malo', 'Regular', 'Bueno', 'Excelente'],
+                    datasets: [{
+                        data: Object.values(ratingCounts),
+                        backgroundColor: [
+                            '#ef4444', // Rojo para Muy Malo
+                            '#f97316', // Naranja para Malo
+                            '#eab308', // Amarillo para Regular
+                            '#06b6d4', // Cian para Bueno
+                            '#10b981'  // Verde para Excelente
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14,
+                                    family: 'Inter'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#f59e0b',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+        }
+
+        // Función para actualizar comentarios recientes
+        function updateRecentComments() {
+            const commentsContainer = document.getElementById('recentComments');
+            const recentSurveys = surveyData
+                .filter(survey => survey.suggestions && survey.suggestions.trim())
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .slice(0, 5);
+
+            if (recentSurveys.length === 0) {
+                commentsContainer.innerHTML = '<div class="no-data-message">No hay comentarios disponibles</div>';
+                return;
+            }
+
+            commentsContainer.innerHTML = recentSurveys.map(survey => `
+                <div class="comment-card" style="background: var(--card-background); border-radius: var(--radius-lg); padding: var(--spacing-lg); margin-bottom: var(--spacing-md); box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);">
+                    <p style="margin: 0; font-size: 1rem; word-wrap: break-word; color: var(--text-primary); line-height: 1.6;">${survey.suggestions}</p>
+                    <small style="display: block; margin-top: var(--spacing-md); color: var(--text-muted); font-size: 0.875rem;">
+                        Por: ${survey.name} - ${new Date(survey.timestamp).toLocaleDateString('es-ES')}
+                    </small>
+                </div>
+            `).join('');
+        }
+
+        // Función para mostrar mensaje de sin datos
+        function showNoDataMessage() {
+            document.getElementById('recentComments').innerHTML = '<div class="no-data-message">No hay datos de encuestas disponibles</div>';
+        }
+
+        // Función para mostrar mensaje de error
+        function showErrorMessage() {
+            document.getElementById('recentComments').innerHTML = '<div class="error-message">Error al cargar los datos. Por favor, inténtalo de nuevo.</div>';
+        }
+
+        // Función para refrescar datos
+        window.refreshData = function() {
+            loadSurveyData();
+        };
+
+        // Función para exportar a CSV
+        window.exportToCSV = function() {
+            if (surveyData.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+
+            const headers = ['Nombre', 'Calidad Comida', 'Servicio', 'Ambiente', 'Comentarios', 'Fecha'];
+            const csvContent = [
+                headers.join(','),
+                ...surveyData.map(survey => [
+                    `"${survey.name || ''}"`,
+                    `"${survey.food_quality || ''}"`,
+                    `"${survey.restaurant_service || ''}"`,
+                    `"${survey.restaurant_atmosphere || ''}"`,
+                    `"${(survey.suggestions || '').replace(/"/g, '""')}"`,
+                    `"${new Date(survey.timestamp).toLocaleDateString('es-ES')}"`
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `encuestas_pepiland_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        // Funciones para modales/pop-ups
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Función para mostrar detalles de encuestas
+        function showSurveysDetails() {
+            const content = document.getElementById('surveysModalContent');
+            if (surveyData.length === 0) {
+                content.innerHTML = '<p>No hay datos de encuestas disponibles.</p>';
+            } else {
+                content.innerHTML = surveyData.map((survey, index) => `
+                    <div class="detail-card">
+                        <p><strong>Encuesta #${index + 1}</strong></p>
+                        <p><strong>Cliente:</strong> ${survey.name || 'N/A'}</p>
+                        <p><strong>Calidad de Comida:</strong> <span class="rating-value">${survey.food_quality || 'N/A'}</span></p>
+                        <p><strong>Servicio:</strong> <span class="rating-value">${survey.restaurant_service || 'N/A'}</span></p>
+                        <p><strong>Ambiente:</strong> <span class="rating-value">${survey.restaurant_atmosphere || 'N/A'}</span></p>
+                        <p><strong>Comentarios:</strong> ${survey.suggestions || 'Sin comentarios'}</p>
+                        <p><strong>Fecha:</strong> ${new Date(survey.timestamp).toLocaleDateString('es-ES')}</p>
+                    </div>
+                `).join('');
+            }
+            openModal('surveysModal');
+        }
+
+        // Función para mostrar comentarios detallados
+        function showCommentsDetails() {
+            const content = document.getElementById('commentsModalContent');
+            const comments = surveyData.filter(survey => survey.suggestions && survey.suggestions.trim());
+            
+            if (comments.length === 0) {
+                content.innerHTML = '<p>No hay comentarios disponibles.</p>';
+            } else {
+                content.innerHTML = comments.map((survey, index) => `
+                    <div class="detail-card">
+                        <p><strong>Comentario #${index + 1}</strong></p>
+                        <p><strong>Cliente:</strong> ${survey.name || 'Anónimo'}</p>
+                        <p><strong>Comentario:</strong> ${survey.suggestions}</p>
+                        <p><strong>Calificaciones:</strong></p>
+                        <p>• Comida: <span class="rating-value">${survey.food_quality || 'N/A'}</span></p>
+                        <p>• Servicio: <span class="rating-value">${survey.restaurant_service || 'N/A'}</span></p>
+                        <p>• Ambiente: <span class="rating-value">${survey.restaurant_atmosphere || 'N/A'}</span></p>
+                        <p><strong>Fecha:</strong> ${new Date(survey.timestamp).toLocaleDateString('es-ES')}</p>
+                    </div>
+                `).join('');
+            }
+            openModal('commentsModal');
+        }
+
+        // Función para mostrar estadísticas avanzadas
+        function showAdvancedStats() {
+            const content = document.getElementById('statsModalContent');
+            
+            if (surveyData.length === 0) {
+                content.innerHTML = '<p>No hay datos suficientes para mostrar estadísticas.</p>';
+                openModal('statsModal');
+                return;
+            }
+
+            // Calcular estadísticas
+            const foodRatings = surveyData.map(s => s.food_quality).filter(r => r);
+            const serviceRatings = surveyData.map(s => s.restaurant_service).filter(r => r);
+            const atmosphereRatings = surveyData.map(s => s.restaurant_atmosphere).filter(r => r);
+
+            const foodAvg = calculateAverage(foodRatings);
+            const serviceAvg = calculateAverage(serviceRatings);
+            const atmosphereAvg = calculateAverage(atmosphereRatings);
+
+            // Calcular distribución de calificaciones
+            const allRatings = [...foodRatings, ...serviceRatings, ...atmosphereRatings];
+            const ratingDistribution = {
+                'Excelente': allRatings.filter(r => r === 'Excelente').length,
+                'Bueno': allRatings.filter(r => r === 'Bueno').length,
+                'Regular': allRatings.filter(r => r === 'Regular').length,
+                'Malo': allRatings.filter(r => r === 'Malo').length,
+                'Muy Malo': allRatings.filter(r => r === 'Muy Malo').length
+            };
+
+            content.innerHTML = `
+                <div class="detail-card">
+                    <h4>📊 Resumen General</h4>
+                    <p><strong>Total de Encuestas:</strong> ${surveyData.length}</p>
+                    <p><strong>Total de Calificaciones:</strong> ${allRatings.length}</p>
+                    <p><strong>Promedio General:</strong> <span class="rating-value">${((parseFloat(foodAvg) + parseFloat(serviceAvg) + parseFloat(atmosphereAvg)) / 3).toFixed(1)}</span></p>
+                </div>
+                
+                <div class="detail-card">
+                    <h4>🍽️ Calidad de Comida</h4>
+                    <p><strong>Promedio:</strong> <span class="rating-value">${foodAvg}</span></p>
+                    <p><strong>Total de calificaciones:</strong> ${foodRatings.length}</p>
+                </div>
+                
+                <div class="detail-card">
+                    <h4>👨‍🍳 Servicio</h4>
+                    <p><strong>Promedio:</strong> <span class="rating-value">${serviceAvg}</span></p>
+                    <p><strong>Total de calificaciones:</strong> ${serviceRatings.length}</p>
+                </div>
+                
+                <div class="detail-card">
+                    <h4>🏠 Ambiente</h4>
+                    <p><strong>Promedio:</strong> <span class="rating-value">${atmosphereAvg}</span></p>
+                    <p><strong>Total de calificaciones:</strong> ${atmosphereRatings.length}</p>
+                </div>
+                
+                <div class="detail-card">
+                    <h4>📈 Distribución de Calificaciones</h4>
+                    <p><strong>Excelente:</strong> <span class="rating-value">${ratingDistribution['Excelente']}</span> (${((ratingDistribution['Excelente'] / allRatings.length) * 100).toFixed(1)}%)</p>
+                    <p><strong>Bueno:</strong> <span class="rating-value">${ratingDistribution['Bueno']}</span> (${((ratingDistribution['Bueno'] / allRatings.length) * 100).toFixed(1)}%)</p>
+                    <p><strong>Regular:</strong> <span class="rating-value">${ratingDistribution['Regular']}</span> (${((ratingDistribution['Regular'] / allRatings.length) * 100).toFixed(1)}%)</p>
+                    <p><strong>Malo:</strong> <span class="rating-value">${ratingDistribution['Malo']}</span> (${((ratingDistribution['Malo'] / allRatings.length) * 100).toFixed(1)}%)</p>
+                    <p><strong>Muy Malo:</strong> <span class="rating-value">${ratingDistribution['Muy Malo']}</span> (${((ratingDistribution['Muy Malo'] / allRatings.length) * 100).toFixed(1)}%)</p>
+                </div>
+            `;
+            
+            openModal('statsModal');
+        }
+
+        // Agregar event listeners a las tarjetas de resumen
+        function addCardClickListeners() {
+            document.querySelectorAll('.summary-card').forEach((card, index) => {
+                card.addEventListener('click', () => {
+                    if (index === 0) { // Total de encuestas
+                        showSurveysDetails();
+                    } else if (index === 1 || index === 2 || index === 3) { // Calificaciones
+                        showAdvancedStats();
+                    }
+                });
+            });
+        }
+
+        // Cerrar modal al hacer clic fuera de él
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSurveyData();
+            // Agregar listeners después de cargar los datos
+            setTimeout(addCardClickListeners, 1000);
+        });
+    </script>
+</body>
+</html>

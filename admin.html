@@ -776,7 +776,7 @@
         </div>
 
         <!-- Gráfico de distribución -->
-        <h2>Distribución de Calificaciones</h2>
+        <h2>Distribución de Calificaciones por Categoría</h2>
         <div class="chart-container">
             <canvas id="ratingsChart"></canvas>
         </div>
@@ -936,50 +936,78 @@
                 ratingsChart.destroy();
             }
 
-            // Preparar datos para el gráfico
-            const allRatings = [
-                ...surveyData.map(s => s.food_quality),
-                ...surveyData.map(s => s.restaurant_service),
-                ...surveyData.map(s => s.restaurant_atmosphere)
-            ].filter(rating => rating);
+            // Preparar datos separados por categoría
+            const foodRatings = surveyData.map(s => s.food_quality).filter(rating => rating);
+            const serviceRatings = surveyData.map(s => s.restaurant_service).filter(rating => rating);
+            const atmosphereRatings = surveyData.map(s => s.restaurant_atmosphere).filter(rating => rating);
 
-            const ratingCounts = {
-                'Muy Malo': 0,
-                'Malo': 0,
-                'Regular': 0,
-                'Bueno': 0,
-                'Excelente': 0
-            };
+            // Función para contar calificaciones por categoría
+            function countRatings(ratings) {
+                return {
+                    'Excelente': ratings.filter(r => r === 'Excelente').length,
+                    'Bueno': ratings.filter(r => r === 'Bueno').length,
+                    'Regular': ratings.filter(r => r === 'Regular').length,
+                    'Malo': ratings.filter(r => r === 'Malo').length,
+                    'Muy Malo': ratings.filter(r => r === 'Muy Malo').length
+                };
+            }
 
-            allRatings.forEach(rating => {
-                if (ratingCounts.hasOwnProperty(rating)) {
-                    ratingCounts[rating]++;
-                }
-            });
+            const foodCounts = countRatings(foodRatings);
+            const serviceCounts = countRatings(serviceRatings);
+            const atmosphereCounts = countRatings(atmosphereRatings);
 
             ratingsChart = new Chart(ctx, {
-                type: 'doughnut',
+                type: 'bar',
                 data: {
-                    labels: ['Muy Malo', 'Malo', 'Regular', 'Bueno', 'Excelente'],
-                    datasets: [{
-                        data: Object.values(ratingCounts),
-                        backgroundColor: [
-                            '#ef4444', // Rojo para Muy Malo
-                            '#f97316', // Naranja para Malo
-                            '#eab308', // Amarillo para Regular
-                            '#06b6d4', // Cian para Bueno
-                            '#10b981'  // Verde para Excelente
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
+                    labels: ['Excelente', 'Bueno', 'Regular', 'Malo', 'Muy Malo'],
+                    datasets: [
+                        {
+                            label: 'Calidad de Comida',
+                            data: [
+                                foodCounts['Excelente'],
+                                foodCounts['Bueno'],
+                                foodCounts['Regular'],
+                                foodCounts['Malo'],
+                                foodCounts['Muy Malo']
+                            ],
+                            backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                            borderColor: 'rgba(245, 158, 11, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Servicio',
+                            data: [
+                                serviceCounts['Excelente'],
+                                serviceCounts['Bueno'],
+                                serviceCounts['Regular'],
+                                serviceCounts['Malo'],
+                                serviceCounts['Muy Malo']
+                            ],
+                            backgroundColor: 'rgba(167, 139, 91, 0.8)',
+                            borderColor: 'rgba(167, 139, 91, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Ambiente',
+                            data: [
+                                atmosphereCounts['Excelente'],
+                                atmosphereCounts['Bueno'],
+                                atmosphereCounts['Regular'],
+                                atmosphereCounts['Malo'],
+                                atmosphereCounts['Muy Malo']
+                            ],
+                            backgroundColor: 'rgba(212, 165, 116, 0.8)',
+                            borderColor: 'rgba(212, 165, 116, 1)',
+                            borderWidth: 2
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom',
+                            position: 'top',
                             labels: {
                                 padding: 20,
                                 font: {
@@ -993,7 +1021,42 @@
                             titleColor: '#ffffff',
                             bodyColor: '#ffffff',
                             borderColor: '#f59e0b',
-                            borderWidth: 1
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const value = context.parsed.y;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Calificaciones',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Calificaciones',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                stepSize: 1
+                            }
                         }
                     }
                 }

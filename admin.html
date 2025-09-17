@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encuestas Pepiland</title>
+    <title>Dashboard Pepiland - Encuestas de Satisfacción</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -404,7 +404,38 @@
 
         .detail-card .rating-value {
             font-weight: 700;
-            color: var(--primary-color);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        /* Colores específicos para calificaciones */
+        .rating-excelente {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .rating-bueno {
+            background-color: #059669;
+            color: white;
+        }
+
+        .rating-regular {
+            background-color: #eab308;
+            color: #451a03;
+        }
+
+        .rating-malo {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .rating-muy-malo {
+            background-color: #dc2626;
+            color: white;
         }
 
         /* Estilos para botón de comentarios */
@@ -533,6 +564,12 @@
                 margin: var(--spacing-xs) 0;
             }
             
+            .rating-value {
+                font-size: 0.8rem !important;
+                padding: 2px 6px !important;
+                min-width: 60px !important;
+            }
+            
             .comments-button {
                 width: 100%;
                 padding: var(--spacing-lg);
@@ -636,6 +673,12 @@
                 margin-bottom: var(--spacing-sm);
             }
             
+            .rating-value {
+                font-size: 0.7rem !important;
+                padding: 2px 4px !important;
+                min-width: 50px !important;
+            }
+            
             .comments-button {
                 width: 100%;
                 padding: var(--spacing-md);
@@ -703,7 +746,7 @@
 <body>
     <div class="container">
         <img src="https://iili.io/Ku3wlJs.png" alt="Logo Pepiland" class="logo">
-        <h1>Visor de las Encuestas Pepiland</h1>
+        <h1>Dashboard Pepiland</h1>
         <p class="description" style="text-align: center; color: var(--text-secondary); font-size: 1.125rem; margin-bottom: var(--spacing-xl);">
             Análisis de Satisfacción del Restaurante
         </p>
@@ -816,6 +859,18 @@
         // Variables globales
         let surveyData = [];
         let ratingsChart = null;
+
+        // Función para obtener la clase CSS de calificación
+        function getRatingClass(rating) {
+            const ratingMap = {
+                'Excelente': 'rating-excelente',
+                'Bueno': 'rating-bueno',
+                'Regular': 'rating-regular',
+                'Malo': 'rating-malo',
+                'Muy Malo': 'rating-muy-malo'
+            };
+            return ratingMap[rating] || '';
+        }
 
         // Función para convertir calificaciones a números
         function ratingToNumber(rating) {
@@ -950,7 +1005,7 @@
             const commentsContainer = document.getElementById('recentComments');
             const recentSurveys = surveyData
                 .filter(survey => survey.suggestions && survey.suggestions.trim())
-                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Ordenar de más nuevo a más viejo
                 .slice(0, 5);
 
             if (recentSurveys.length === 0) {
@@ -961,8 +1016,13 @@
             commentsContainer.innerHTML = recentSurveys.map(survey => `
                 <div class="comment-card" style="background: var(--card-background); border-radius: var(--radius-lg); padding: var(--spacing-lg); margin-bottom: var(--spacing-md); box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);">
                     <p style="margin: 0; font-size: 1rem; word-wrap: break-word; color: var(--text-primary); line-height: 1.6;">${survey.suggestions}</p>
+                    <div style="display: flex; gap: 8px; margin-top: var(--spacing-md); flex-wrap: wrap;">
+                        <span class="rating-value ${getRatingClass(survey.food_quality)}" style="font-size: 0.75rem;">Comida: ${survey.food_quality || 'N/A'}</span>
+                        <span class="rating-value ${getRatingClass(survey.restaurant_service)}" style="font-size: 0.75rem;">Servicio: ${survey.restaurant_service || 'N/A'}</span>
+                        <span class="rating-value ${getRatingClass(survey.restaurant_atmosphere)}" style="font-size: 0.75rem;">Ambiente: ${survey.restaurant_atmosphere || 'N/A'}</span>
+                    </div>
                     <small style="display: block; margin-top: var(--spacing-md); color: var(--text-muted); font-size: 0.875rem;">
-                        Por: ${survey.name} - ${new Date(survey.timestamp).toLocaleDateString('es-ES')}
+                        Por: ${survey.name} - ${new Date(survey.timestamp).toLocaleDateString('es-ES')} ${new Date(survey.timestamp).toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'})}
                     </small>
                 </div>
             `).join('');
@@ -1101,15 +1161,26 @@
             if (surveyData.length === 0) {
                 content.innerHTML = '<p>No hay datos de encuestas disponibles.</p>';
             } else {
-                content.innerHTML = surveyData.map((survey, index) => `
+                // Ordenar encuestas de más nueva a más vieja
+                const sortedSurveys = [...surveyData].sort((a, b) => 
+                    new Date(b.timestamp) - new Date(a.timestamp)
+                );
+
+                content.innerHTML = sortedSurveys.map((survey, index) => `
                     <div class="detail-card">
                         <p><strong>Encuesta #${index + 1}</strong></p>
                         <p><strong>Cliente:</strong> ${survey.name || 'N/A'}</p>
-                        <p><strong>Calidad de Comida:</strong> <span class="rating-value">${survey.food_quality || 'N/A'}</span></p>
-                        <p><strong>Servicio:</strong> <span class="rating-value">${survey.restaurant_service || 'N/A'}</span></p>
-                        <p><strong>Ambiente:</strong> <span class="rating-value">${survey.restaurant_atmosphere || 'N/A'}</span></p>
+                        <p><strong>Calidad de Comida:</strong> 
+                            <span class="rating-value ${getRatingClass(survey.food_quality)}">${survey.food_quality || 'N/A'}</span>
+                        </p>
+                        <p><strong>Servicio:</strong> 
+                            <span class="rating-value ${getRatingClass(survey.restaurant_service)}">${survey.restaurant_service || 'N/A'}</span>
+                        </p>
+                        <p><strong>Ambiente:</strong> 
+                            <span class="rating-value ${getRatingClass(survey.restaurant_atmosphere)}">${survey.restaurant_atmosphere || 'N/A'}</span>
+                        </p>
                         <p><strong>Comentarios:</strong> ${survey.suggestions || 'Sin comentarios'}</p>
-                        <p><strong>Fecha:</strong> ${new Date(survey.timestamp).toLocaleDateString('es-ES')}</p>
+                        <p><strong>Fecha:</strong> ${new Date(survey.timestamp).toLocaleDateString('es-ES')} - ${new Date(survey.timestamp).toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'})}</p>
                     </div>
                 `).join('');
             }
@@ -1119,7 +1190,9 @@
         // Función para mostrar comentarios detallados
         function showCommentsDetails() {
             const content = document.getElementById('commentsModalContent');
-            const comments = surveyData.filter(survey => survey.suggestions && survey.suggestions.trim());
+            const comments = surveyData
+                .filter(survey => survey.suggestions && survey.suggestions.trim())
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Ordenar de más nuevo a más viejo
             
             if (comments.length === 0) {
                 content.innerHTML = '<p>No hay comentarios disponibles.</p>';
@@ -1130,10 +1203,10 @@
                         <p><strong>Cliente:</strong> ${survey.name || 'Anónimo'}</p>
                         <p><strong>Comentario:</strong> ${survey.suggestions}</p>
                         <p><strong>Calificaciones:</strong></p>
-                        <p>• Comida: <span class="rating-value">${survey.food_quality || 'N/A'}</span></p>
-                        <p>• Servicio: <span class="rating-value">${survey.restaurant_service || 'N/A'}</span></p>
-                        <p>• Ambiente: <span class="rating-value">${survey.restaurant_atmosphere || 'N/A'}</span></p>
-                        <p><strong>Fecha:</strong> ${new Date(survey.timestamp).toLocaleDateString('es-ES')}</p>
+                        <p>• Comida: <span class="rating-value ${getRatingClass(survey.food_quality)}">${survey.food_quality || 'N/A'}</span></p>
+                        <p>• Servicio: <span class="rating-value ${getRatingClass(survey.restaurant_service)}">${survey.restaurant_service || 'N/A'}</span></p>
+                        <p>• Ambiente: <span class="rating-value ${getRatingClass(survey.restaurant_atmosphere)}">${survey.restaurant_atmosphere || 'N/A'}</span></p>
+                        <p><strong>Fecha:</strong> ${new Date(survey.timestamp).toLocaleDateString('es-ES')} - ${new Date(survey.timestamp).toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'})}</p>
                     </div>
                 `).join('');
             }

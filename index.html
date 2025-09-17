@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta de Satisfacción del Restaurante - Pepiland</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Paleta de Colores Pepiland - Amarillo y Marrón Claro */
+            --primary-color: #f59e0b; /* Amber 500 - Amarillo Principal */
+            --primary-dark: #d97706; /* Amber 600 - Amarillo Oscuro */
+            --primary-light: #fbbf24; /* Amber 400 - Amarillo Claro */
+            --secondary-color: #a78b5b; /* Marrón Claro */
+            --accent-brown: #d4a574; /* Acento Marrón Claro */
+            --background-color: #fefce8; /* Amarillo 50 */
+            --card-background: #ffffff;
+            --text-color: #451a03; /* Amber 900 - Marrón Oscuro */
+            --text-muted: #a78b5b; /* Marrón Claro */
+            --border-color: #fde68a; /* Amber 200 */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+            /* Colores de Mensajes */
+            --success-bg: #f0fdf4;
+            --success-text: #166534;
+            --success-border: #bbf7d0;
+            --error-bg: #fef2f2;
+            --error-text: #dc2626;
+            --error-border: #fecaca;
+
+            /* Colores de Caras (adaptado para tema de restaurante) */
+            --face-bad: #ef4444; /* Rojo 500 */
+            --face-poor: #f97316; /* Naranja 500 */
+            --face-regular: #eab308; /* Amarillo 500 */
+            --face-good: #06b6d4; /* Cian 500 */
+            --face-excellent: #10b981; /* Esmeralda 500 */
+            --face-default: #d4a574; /* Marrón Claro */
+            --selected-border: 2px solid var(--primary-color);
+            --selected-shadow: 0 0 0 4px rgb(245 158 11 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fbbf24 0%, #d4a574 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background: var(--card-background);
+            border-radius: 24px;
+            box-shadow: var(--shadow-xl);
+            padding: 48px;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        .logo {
+            max-width: 200px;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.1));
+        }
+
+        h1 {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.025em;
+        }
+
+        p.description {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 1.125rem;
+            letter-spacing: -0.025em;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--card-background);
+            color: var(--text-color);
+            box-sizing: border-box;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgb(245 158 11 / 0.1);
+            transform: translateY(-1px);
+        }
+
+        #name {
+            max-width: 200px;
+            width: 100%;
+            display: block;
+            margin: 0;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .rating-faces {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .rating-faces label {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--face-default);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 16px 8px;
+            border: 2px solid transparent;
+            border-radius: 16px;
+            background: var(--card-background);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .rating-faces label .face-icon {
+            font-size: 1.75rem;
+            margin-bottom: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .rating-faces input[type="radio"] {
+            display: none;
+        }
+
+        .rating-faces label:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            background: linear-gradient(135deg, rgb(245 158 11 / 0.05), rgb(245 158 11 / 0.02));
+        }
+
+        .rating-faces input[type="radio"]:checked + label {
+            transform: translateY(-2px);
+            border: var(--selected-border);
+            box-shadow: var(--selected-shadow);
+            background: linear-gradient(135deg, rgb(245 158 11 / 0.1), rgb(245 158 11 / 0.05));
+        }
+
+        .rating-faces input[type="radio"]:checked + label[for*="-1"] { color: var(--face-bad); }
+        .rating-faces input[type="radio"]:checked + label[for*="-2"] { color: var(--face-poor); }
+        .rating-faces input[type="radio"]:checked + label[for*="-3"] { color: var(--face-regular); }
+        .rating-faces input[type="radio"]:checked + label[for*="-4"] { color: var(--face-good); }
+        .rating-faces input[type="radio"]:checked + label[for*="-5"] { color: var(--face-excellent); }
+
+        .rating-faces small {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-top: 4px;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            margin-top: 48px;
+            box-shadow: var(--shadow);
+            font-family: inherit;
+            letter-spacing: -0.025em;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            margin-top: 24px;
+            padding: 20px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 1rem;
+            animation: slideIn 0.3s ease-out;
+            text-align: left;
+            border: 1px solid;
+        }
+
+        .message.success {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            border-color: var(--success-border);
+        }
+
+        .message.error {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            border-color: var(--error-border);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        button[type="submit"].loading {
+            background: var(--secondary-color);
+            cursor: not-allowed;
+            opacity: 0.8;
+            transform: none;
+        }
+
+        .thank-you-message {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            text-align: center;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .thank-you-message h2 {
+            background: linear-gradient(135deg, var(--success-text), #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+
+        .thank-you-message p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 48px;
+            max-width: 80%;
+            line-height: 1.7;
+        }
+
+        .new-survey-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow);
+            font-family: inherit;
+        }
+
+        .new-survey-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Diseño Responsivo */
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+            
+            .container {
+                padding: 32px 24px;
+                border-radius: 20px;
+            }
+            
+            .logo {
+                max-width: 160px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            p.description {
+                font-size: 1rem;
+            }
+            
+            .form-group label {
+                font-size: 1rem;
+            }
+            
+            #name {
+                max-width: 160px;
+            }
+            
+            .rating-faces {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 8px;
+            }
+            
+            .rating-faces label {
+                padding: 12px 6px;
+            }
+            
+            .rating-faces label .face-icon {
+                font-size: 1.5rem;
+            }
+            
+            .rating-faces small {
+                font-size: 0.75rem;
+            }
+            
+            button[type="submit"] {
+                font-size: 1rem;
+                padding: 16px 32px;
+            }
+            
+            .thank-you-message h2 {
+                font-size: 2rem;
+            }
+            
+            .thank-you-message p {
+                font-size: 1.125rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px 20px;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            #name {
+                max-width: 140px;
+            }
+            
+            .rating-faces {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+            
+            .rating-faces label {
+                padding: 10px 4px;
+            }
+            
+            .rating-faces label .face-icon {
+                font-size: 1.25rem;
+            }
+            
+            .rating-faces small {
+                font-size: 0.7rem;
+            }
+            
+            button[type="submit"] {
+                font-size: 0.95rem;
+                padding: 14px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="surveyFormContainer">
+        <img src="https://iili.io/Ku3wlJs.png" alt="Logo Pepiland" class="logo">
+        <h1>¡Ayudanos a mejorar!</h1>
+        <p class="description">Por favor estimados clientes y amigos nos pudieran dar su opinión sobre su experiencia en el restaurante.</p>
+
+        <form id="satisfactionForm">
+            <div class="form-group">
+                <label for="name"><strong>Nombre Completo:</strong></label>
+                <input type="text" id="name" name="name" placeholder="Ej. Juan Pérez" required autocomplete="name">
+            </div>
+
+            <div class="form-group">
+                <label><strong>¿Cómo calificarías la calidad de la comida?</strong></label>
+                <div class="rating-faces" data-question="food_quality">
+                    <input type="radio" id="food-quality-5" name="food_quality" value="Excelente" required><label for="food-quality-5"><span class="face-icon">😄</span><small>Excelente</small></label>
+                    <input type="radio" id="food-quality-4" name="food_quality" value="Bueno"><label for="food-quality-4"><span class="face-icon">🙂</span><small>Bueno</small></label>
+                    <input type="radio" id="food-quality-3" name="food_quality" value="Regular"><label for="food-quality-3"><span class="face-icon">😐</span><small>Regular</small></label>
+                    <input type="radio" id="food-quality-2" name="food_quality" value="Malo"><label for="food-quality-2"><span class="face-icon">🙁</span><small>Malo</small></label>
+                    <input type="radio" id="food-quality-1" name="food_quality" value="Muy Malo"><label for="food-quality-1"><span class="face-icon">😡</span><small>Muy Malo</small></label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><strong>¿Cómo calificarías el servicio del restaurante?</strong></label>
+                <div class="rating-faces" data-question="restaurant_service">
+                    <input type="radio" id="restaurant-service-5" name="restaurant_service" value="Excelente" required><label for="restaurant-service-5"><span class="face-icon">😄</span><small>Excelente</small></label>
+                    <input type="radio" id="restaurant-service-4" name="restaurant_service" value="Bueno"><label for="restaurant-service-4"><span class="face-icon">🙂</span><small>Bueno</small></label>
+                    <input type="radio" id="restaurant-service-3" name="restaurant_service" value="Regular"><label for="restaurant-service-3"><span class="face-icon">😐</span><small>Regular</small></label>
+                    <input type="radio" id="restaurant-service-2" name="restaurant_service" value="Malo"><label for="restaurant-service-2"><span class="face-icon">🙁</span><small>Malo</small></label>
+                    <input type="radio" id="restaurant-service-1" name="restaurant_service" value="Muy Malo"><label for="restaurant-service-1"><span class="face-icon">😡</span><small>Muy Malo</small></label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><strong>¿Qué te parece el ambiente del restaurante?</strong></label>
+                <div class="rating-faces" data-question="restaurant_atmosphere">
+                    <input type="radio" id="restaurant-atmosphere-5" name="restaurant_atmosphere" value="Excelente" required><label for="restaurant-atmosphere-5"><span class="face-icon">😄</span><small>Excelente</small></label>
+                    <input type="radio" id="restaurant-atmosphere-4" name="restaurant_atmosphere" value="Bueno"><label for="restaurant-atmosphere-4"><span class="face-icon">🙂</span><small>Bueno</small></label>
+                    <input type="radio" id="restaurant-atmosphere-3" name="restaurant_atmosphere" value="Regular"><label for="restaurant-atmosphere-3"><span class="face-icon">😐</span><small>Regular</small></label>
+                    <input type="radio" id="restaurant-atmosphere-2" name="restaurant_atmosphere" value="Malo"><label for="restaurant-atmosphere-2"><span class="face-icon">🙁</span><small>Malo</small></label>
+                    <input type="radio" id="restaurant-atmosphere-1" name="restaurant_atmosphere" value="Muy Malo"><label for="restaurant-atmosphere-1"><span class="face-icon">😡</span><small>Muy Malo</small></label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="suggestions"><strong>Sugerencias y Comentarios:</strong></label>
+                <textarea id="suggestions" name="suggestions" rows="4" placeholder="Comparte tus sugerencias para mejorar..."></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn">Enviar Opinión</button>
+            <div id="message" class="message" style="display: none;"></div>
+        </form>
+    </div>
+
+    <div class="container thank-you-message" id="thankYouMessage">
+        <img src="https://iili.io/Ku3cKP4.png" alt="Logo Pepiland" class="logo">
+        <h2>¡Gracias por tu Opinión del Restaurante!</h2>
+        <p>Tu opinión es invaluable para nosotros y nos ayuda a mejorar continuamente tu experiencia gastronómica en Pepiland. ¡Esperamos verte pronto de nuevo!</p>
+        <button id="newSurveyBtn" class="new-survey-button">Realizar Otra Encuesta</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAPhuV0WvM2V3V2zeoj1ix3DW2z82818f4",
+            authDomain: "ismakun-proyectos.firebaseapp.com",
+            projectId: "ismakun-proyectos",
+            storageBucket: "ismakun-proyectos.firebasestorage.app",
+            messagingSenderId: "958811816629",
+            appId: "1:958811816629:web:d99a428ab17c3098eb74fc",
+            measurementId: "G-QJESY4Y7VM"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const analytics = getAnalytics(app);
+
+        const satisfactionForm = document.getElementById('satisfactionForm');
+        const messageDiv = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+        const surveyFormContainer = document.getElementById('surveyFormContainer');
+        const thankYouMessage = document.getElementById('thankYouMessage');
+        const newSurveyBtn = document.getElementById('newSurveyBtn');
+
+        // Función para mostrar un mensaje (éxito/error)
+        function showMessage(msg, type) {
+            messageDiv.textContent = msg;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+        }
+
+        // Función para reiniciar el formulario y ocultar mensaje
+        function resetForm() {
+            satisfactionForm.reset();
+            messageDiv.style.display = 'none';
+
+            // Reiniciar estado visual de las caras al predeterminado (gris y sin borde/sombra)
+            document.querySelectorAll('.rating-faces input[type="radio"]').forEach(input => {
+                const label = document.querySelector(`label[for="${input.id}"]`);
+                if(label) {
+                    label.style.color = '';
+                    label.style.border = '';
+                    label.style.boxShadow = '';
+                    label.classList.remove('selected');
+                    label.style.backgroundColor = '';
+                }
+            });
+        }
+
+        // Manejar envío del formulario
+        satisfactionForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Enviando...';
+            showMessage('', 'info');
+
+            const formData = new FormData(satisfactionForm);
+            const data = {
+                name: formData.get('name') ? formData.get('name').trim() : '',
+                food_quality: formData.get('food_quality') || '',
+                restaurant_service: formData.get('restaurant_service') || '',
+                restaurant_atmosphere: formData.get('restaurant_atmosphere') || '',
+                suggestions: formData.get('suggestions') ? formData.get('suggestions').trim() : '',
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                const restaurantSatisfactionRef = ref(database, 'restaurant_satisfaction');
+                const newSatisfactionRef = push(restaurantSatisfactionRef);
+                await set(newSatisfactionRef, data);
+                showMessage('¡Gracias! Tu opinión ha sido enviada exitosamente.', 'success');
+                surveyFormContainer.style.display = 'none';
+                thankYouMessage.style.display = 'flex';
+            } catch (error) {
+                console.error("Error al enviar la encuesta:", error);
+                showMessage(`Error de envío: ${error.message}. Por favor, inténtalo de nuevo.`, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = 'Enviar Opinión';
+            }
+        });
+
+        newSurveyBtn.addEventListener('click', () => {
+            location.reload();
+        });
+
+        document.querySelectorAll('.rating-faces input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                const groupName = radio.name;
+                document.querySelectorAll(`.rating-faces input[name="${groupName}"] + label`).forEach(label => {
+                    label.style.color = '';
+                    label.style.border = '';
+                    label.style.boxShadow = '';
+                    label.classList.remove('selected');
+                    label.style.backgroundColor = '';
+                });
+
+                const selectedLabel = document.querySelector(`label[for="${radio.id}"]`);
+                if (selectedLabel) {
+                    selectedLabel.style.border = 'var(--selected-border)';
+                    selectedLabel.style.boxShadow = 'var(--selected-shadow)';
+                    selectedLabel.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            resetForm();
+            surveyFormContainer.style.display = 'block';
+            thankYouMessage.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
